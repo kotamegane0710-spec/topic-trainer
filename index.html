@@ -8,6 +8,7 @@
 body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;font-size:16px;line-height:1.7;padding-bottom:88px}
 header{position:sticky;top:0;z-index:20;background:rgba(15,20,32,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:10px 14px}
 header h1{margin:0;font-size:17px}header p{margin:2px 0 0;font-size:11px;color:var(--sub)}
+#kanaBtn{position:absolute;right:10px;top:12px;padding:6px 10px;font-size:12px;border-radius:999px}
 main{padding:14px;max-width:780px;margin:0 auto}.view{display:none}.view.on{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 .card h2{margin:0 0 8px;font-size:15px;color:var(--acc)}
@@ -35,6 +36,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px
 input[type=search]{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:15px}
 .timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--warn)}
 .passage{background:var(--card2);border-radius:10px;padding:12px;margin-bottom:10px;font-size:17px;line-height:1.95}
+.passage .kana{font-size:13px;line-height:1.6}
 .muted{color:var(--sub);font-size:12.5px}
 .badge{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;background:var(--card2);border:1px solid var(--line);color:var(--sub);margin-left:6px}
 #v-hangul .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px}
@@ -46,22 +48,28 @@ input[type=search]{width:100%;padding:10px;border-radius:10px;border:1px solid v
 #v-hangul .ban td{cursor:pointer}#v-hangul .ban td b{display:block;font-size:17px}
 #v-hangul .ban td span{font-size:10px;color:var(--warn)}
 </style></head><body>
-<header><h1>TOPIK I ― 2級 合格トレーナー</h1><p>ハングル入門＋語彙1,669語／全ハングルに自動カタカナ読み＋日本語訳</p></header>
+<header><h1>TOPIK I ― 2級 合格トレーナー</h1><p>ハングル入門＋語彙1,669語／カナ読み・日本語訳つき</p>
+<button id="kanaBtn" onclick="toggleKana()">カナ:ON</button></header>
 <main>
 <section id="v-home" class="view on">
  <div class="card"><h2>学習ステータス</h2>
   <div class="stat"><div><b id="s-words">0</b><span>覚えた語</span></div><div><b id="s-rate">0%</b><span>演習正答率</span></div><div><b id="s-mock">―</b><span>模試最高</span></div></div>
   <div class="bar"><i id="s-bar" style="width:0%"></i></div>
   <p class="muted">収録 <b id="s-total">0</b> 語（1級 <b id="s-l1">0</b>／2級 <b id="s-l2">0</b>）。2級合格の目安は200点満点中140点以上です。</p></div>
+ <div class="card"><h2>カナ表示モード</h2>
+  <p class="muted">ヘッダー右の「カナ」ボタンで全画面一括切替です（設定は保存されます）。</p>
+  <table><tr><th>状態</th><th>動作</th><th>用途</th></tr>
+  <tr><td><b>ON（既定）</b></td><td>単語カード・字母表・반절표・文法例文・演習・模試のすべてで、タップや解答の前からカナ読みと訳を表示</td><td>インプット学習・音読</td></tr>
+  <tr><td>OFF</td><td>カナは隠れ、タップまたは解答後に表示</td><td>記憶テスト・本番再現</td></tr></table></div>
  <div class="card"><h2>推奨の学習順</h2>
   <table><tr><th>段階</th><th>タブ</th><th>到達点</th></tr>
   <tr><td>1</td><td>ハングル</td><td>字母と반절표を読め、パッチム7音と発音変化を判別できる</td></tr>
   <tr><td>2</td><td>単語帳</td><td>1級語彙を8割定着（まず1級フィルタで回す）</td></tr>
   <tr><td>3</td><td>文法</td><td>必修30パターンを例文ごと音読</td></tr>
-  <tr><td>4</td><td>演習</td><td>語彙・訳→韓・文法を各90%以上</td></tr>
-  <tr><td>5</td><td>模試</td><td>200点換算140点以上を安定させる</td></tr></table></div>
- <div class="card"><h2>カタカナ読みについて</h2>
-  <p class="muted">発音ベースで自動生成しています（連音化・濃音化・激音化・鼻音化・ㄹ同化・ㅎ脱落・口蓋音化を実装）。カナは近似表記のため、カードでは常にハングルを主表示にしています。</p>
+  <tr><td>4</td><td>演習</td><td>語彙・訳→韓・文法を各90%以上（仕上げはカナOFF）</td></tr>
+  <tr><td>5</td><td>模試</td><td>カナOFFで200点換算140点以上を安定させる</td></tr></table></div>
+ <div class="card"><h2>カタカナ読みの生成</h2>
+  <p class="muted">発音ベースで自動生成しています（連音化・濃音化・激音化・鼻音化・ㄹ同化・ㅎ脱落・口蓋音化を実装）。</p>
   <table><tr><th>例</th><th>生成結果</th></tr>
   <tr><td>좋다 → [조타]</td><td id="d1"></td></tr><tr><td>읽다 → [익따]</td><td id="d2"></td></tr>
   <tr><td>많이 → [마니]</td><td id="d3"></td></tr><tr><td>같이 → [가치]</td><td id="d4"></td></tr>
@@ -75,18 +83,18 @@ input[type=search]{width:100%;padding:10px;border-radius:10px;border:1px solid v
   <label class="muted"><input type="checkbox" id="hideKnown"> 覚えた語を除外</label>
   <div class="flash" onclick="flip()"><div class="big" id="f-ko">―</div>
    <div id="f-back" class="hide"><div class="kana" id="f-kana"></div><div class="ja" id="f-ja"></div></div>
-   <div class="muted" id="f-hint" style="margin-top:14px">タップで読み方と意味を表示</div></div>
+   <div class="muted" id="f-hint" style="margin-top:14px"></div></div>
   <div class="row" style="margin-top:10px"><button class="btn-ng" onclick="mark(false)">△ もう一度</button><button class="btn-ok" onclick="mark(true)">○ 覚えた</button></div>
   <p class="muted" id="f-prog" style="text-align:center"></p></div>
  <div class="card"><h2>語彙リスト</h2><input type="search" id="q" placeholder="ハングル・カナ・日本語で検索" oninput="renderList()">
   <div style="max-height:62vh;overflow:auto;margin-top:10px"><table id="wlist"></table></div></div>
 </section>
-<section id="v-gram" class="view"><div class="card"><h2>2級必修 文法30</h2><p class="muted">例文をタップするとカナ読みと訳が開きます。</p></div><div id="gramBox"></div></section>
+<section id="v-gram" class="view"><div class="card"><h2>2級必修 文法30</h2><p class="muted" id="gramNote"></p></div><div id="gramBox"></div></section>
 <section id="v-drill" class="view"><div class="card"><h2>演習問題</h2>
  <div class="row"><button onclick="startDrill('vocab')">語彙10問</button><button onclick="startDrill('rev')">訳→韓10問</button><button onclick="startDrill('gram')">文法10問</button><button onclick="startDrill('all')">総合12問</button></div>
- <p class="muted">出題範囲は単語帳で選択中の級・カテゴリに連動します。</p></div><div id="drillBox"></div></section>
+ <p class="muted">出題範囲は単語帳で選択中の級・カテゴリに連動します。カナONなら解答前から問題文の読みを表示します。</p></div><div id="drillBox"></div></section>
 <section id="v-mock" class="view"><div class="card"><h2>模擬試験（読解15問・25分）</h2>
- <p class="muted">解答中は訳を隠します。提出後に全問のカナ読み・訳・解説を表示します。</p>
+ <p class="muted">カナONなら本文にカナ読みが付きます。本番再現にはカナOFFを推奨します。訳は提出後に表示されます。</p>
  <div class="row"><button class="btn-acc" onclick="startMock()">試験開始</button><button onclick="submitMock()">提出・採点</button></div>
  <p>残り時間：<span class="timer" id="clock">25:00</span></p></div><div id="mockBox"></div></section>
 </main>
@@ -1859,8 +1867,16 @@ const MOCK=[{p:"저는 한국 드라마를 아주 좋아합니다. 그래서 매
 
 /* ========== アプリ本体 ========== */
 const LS={get k(){return JSON.parse(localStorage.getItem('tk_known')||'[]')},set k(v){localStorage.setItem('tk_known',JSON.stringify(v))},get st(){return JSON.parse(localStorage.getItem('tk_stat')||'{"c":0,"t":0,"mock":null}')},set st(v){localStorage.setItem('tk_stat',JSON.stringify(v))}};
+let KANA_ON=localStorage.getItem('tk_kana')!=='0';
 let WORDS=[],cat='全部',lv='全部',pool=[],idx=0;
 (function(){let c='';RAW.split('\n').forEach(l=>{l=l.trim();if(!l)return;if(l[0]==='#'){c=l.slice(1);return;}const p=l.split('|');WORDS.push({ko:p[0],ja:p[1],lv:p[2]==='2'?2:1,cat:c,kana:kana(p[0])});});})();
+function toggleKana(){KANA_ON=!KANA_ON;localStorage.setItem('tk_kana',KANA_ON?'1':'0');applyKana();}
+function applyKana(){
+ document.getElementById('kanaBtn').textContent='カナ:'+(KANA_ON?'ON':'OFF');
+ document.getElementById('kanaBtn').style.background=KANA_ON?'var(--acc)':'var(--card2)';
+ document.getElementById('kanaBtn').style.color=KANA_ON?'#07121f':'var(--txt)';
+ document.getElementById('gramNote').textContent=KANA_ON?'カナ読みと訳を表示中です。タップすると個別に隠せます。':'例文をタップするとカナ読みと訳が開きます。';
+ buildHangul();renderGram();showCard();}
 function go(v){document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));document.getElementById('v-'+v).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));scrollTo(0,0);if(v==='home')renderHome();}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
 function renderHome(){const k=LS.k,st=LS.st;document.getElementById('s-words').textContent=k.length;document.getElementById('s-total').textContent=WORDS.length;document.getElementById('s-l1').textContent=WORDS.filter(w=>w.lv===1).length;document.getElementById('s-l2').textContent=WORDS.filter(w=>w.lv===2).length;document.getElementById('s-rate').textContent=st.t?Math.round(st.c/st.t*100)+'%':'0%';document.getElementById('s-mock').textContent=st.mock!=null?st.mock+'点':'―';document.getElementById('s-bar').style.width=Math.min(100,k.length/WORDS.length*100)+'%';
@@ -1872,32 +1888,37 @@ function setLv(l){lv=l;buildChips();buildPool();}
 function filtered(){const kn=LS.k,hk=document.getElementById('hideKnown').checked;return WORDS.filter(w=>(cat==='全部'||w.cat===cat)&&(lv==='全部'||w.lv===(lv==='1級'?1:2))&&!(hk&&kn.includes(w.ko)));}
 function buildPool(){pool=shuffle(filtered());idx=0;showCard();}
 function showCard(){const b=document.getElementById('f-back');if(!pool.length){document.getElementById('f-ko').textContent='🎉 対象なし';b.classList.add('hide');document.getElementById('f-prog').textContent='';return;}
- const w=pool[idx%pool.length];document.getElementById('f-ko').textContent=w.ko;document.getElementById('f-kana').textContent='【読み】'+w.kana;document.getElementById('f-ja').textContent='【意味】'+w.ja+'（'+w.lv+'級・'+w.cat+'）';b.classList.add('hide');document.getElementById('f-hint').classList.remove('hide');document.getElementById('f-prog').textContent=(idx%pool.length+1)+' / '+pool.length+'　覚えた語：'+LS.k.length;}
-function flip(){document.getElementById('f-back').classList.toggle('hide');document.getElementById('f-hint').classList.toggle('hide');}
+ const w=pool[idx%pool.length];document.getElementById('f-ko').textContent=w.ko;document.getElementById('f-kana').textContent='【読み】'+w.kana;document.getElementById('f-ja').textContent='【意味】'+w.ja+'（'+w.lv+'級・'+w.cat+'）';
+ b.classList.toggle('hide',!KANA_ON);
+ document.getElementById('f-hint').textContent=KANA_ON?'タップで隠す（テストモード）':'タップで読み方と意味を表示';
+ document.getElementById('f-hint').classList.remove('hide');
+ document.getElementById('f-prog').textContent=(idx%pool.length+1)+' / '+pool.length+'　覚えた語：'+LS.k.length;}
+function flip(){const b=document.getElementById('f-back'),h=document.getElementById('f-hint');b.classList.toggle('hide');
+ h.textContent=b.classList.contains('hide')?'タップで読み方と意味を表示':'タップで隠す（テストモード）';}
 function mark(ok){if(!pool.length)return;const w=pool[idx%pool.length],k=LS.k;if(ok&&!k.includes(w.ko)){k.push(w.ko);LS.k=k;}if(!ok){const i=k.indexOf(w.ko);if(i>=0){k.splice(i,1);LS.k=k;}}idx++;showCard();}
 function renderList(){const q=document.getElementById('q').value.trim().toLowerCase(),kn=LS.k;
  const rows=WORDS.filter(w=>!q||(w.ko+w.kana+w.ja+w.cat).toLowerCase().includes(q)).slice(0,600)
  .map(w=>'<tr><td><b style="font-size:16px">'+w.ko+'</b>'+(kn.includes(w.ko)?'<span class="badge">済</span>':'')+'<div class="kana">'+w.kana+'</div></td><td>'+w.ja+'<div class="muted">'+w.lv+'級・'+w.cat+'</div></td></tr>').join('');
  document.getElementById('wlist').innerHTML='<tr><th>ハングル／カナ</th><th>意味</th></tr>'+rows;}
-function renderGram(){document.getElementById('gramBox').innerHTML=GRAMMAR.map((g,i)=>'<div class="card"><h2>'+(i+1)+'. '+g[0]+'</h2><div><b>'+g[1]+'</b></div><div class="muted">'+g[2]+'</div><div style="margin-top:8px;cursor:pointer" onclick="this.querySelector(\'.gx\').classList.toggle(\'hide\')"><div class="ko" style="font-size:18px">'+g[3]+'</div><div class="gx hide"><div class="kana">'+kana(g[3].replace(/[.?!]/g,''))+'</div><div class="ja">'+g[4]+'</div></div><div class="muted">▼タップでカナ読み・訳</div></div></div>').join('');}
+function renderGram(){document.getElementById('gramBox').innerHTML=GRAMMAR.map((g,i)=>'<div class="card"><h2>'+(i+1)+'. '+g[0]+'</h2><div><b>'+g[1]+'</b></div><div class="muted">'+g[2]+'</div><div style="margin-top:8px;cursor:pointer" onclick="this.querySelector(\'.gx\').classList.toggle(\'hide\')"><div class="ko" style="font-size:18px">'+g[3]+'</div><div class="gx'+(KANA_ON?'':' hide')+'"><div class="kana">'+kana(g[3].replace(/[.?!]/g,''))+'</div><div class="ja">'+g[4]+'</div></div><div class="muted">▼タップで表示切替</div></div></div>').join('');}
 function startDrill(t){let qs=[],base=filtered();if(base.length<5)base=WORDS;
- if(t==='vocab'||t==='all')qs=qs.concat(shuffle(base).slice(0,t==='all'?6:10).map(w=>{const o=shuffle([w.ja,...shuffle(WORDS.filter(x=>x.ko!==w.ko)).slice(0,3).map(x=>x.ja)]);return{q:'この語の意味を選びなさい。',s:w.ko,o:o,a:o.indexOf(w.ja),k:w.kana,j:w.ja,e:w.lv+'級・'+w.cat};}));
- if(t==='rev')qs=qs.concat(shuffle(base).slice(0,10).map(w=>{const o=shuffle([w.ko,...shuffle(WORDS.filter(x=>x.ko!==w.ko)).slice(0,3).map(x=>x.ko)]);return{q:'この意味にあたる韓国語を選びなさい。',s:w.ja,o:o,a:o.indexOf(w.ko),k:w.kana,j:w.ja,e:'正答の読み：'+w.kana};}));
- if(t==='gram'||t==='all')qs=qs.concat(shuffle(GQ).slice(0,t==='all'?6:10).map(x=>Object.assign({},x,{k:kana(x.s.replace(/[().?!]/g,''))})));
+ if(t==='vocab'||t==='all')qs=qs.concat(shuffle(base).slice(0,t==='all'?6:10).map(w=>{const o=shuffle([w.ja,...shuffle(WORDS.filter(x=>x.ko!==w.ko)).slice(0,3).map(x=>x.ja)]);return{q:'この語の意味を選びなさい。',s:w.ko,sk:w.kana,o:o,a:o.indexOf(w.ja),k:w.kana,j:w.ja,e:w.lv+'級・'+w.cat};}));
+ if(t==='rev')qs=qs.concat(shuffle(base).slice(0,10).map(w=>{const o=shuffle([w.ko,...shuffle(WORDS.filter(x=>x.ko!==w.ko)).slice(0,3).map(x=>x.ko)]);return{q:'この意味にあたる韓国語を選びなさい。',s:w.ja,sk:'',o:o,a:o.indexOf(w.ko),k:w.kana,j:w.ja,e:'正答の読み：'+w.kana};}));
+ if(t==='gram'||t==='all')qs=qs.concat(shuffle(GQ).slice(0,t==='all'?6:10).map(x=>{const kk=kana(x.s.replace(/[().?!]/g,''));return Object.assign({},x,{k:kk,sk:kk});}));
  renderDrill(shuffle(qs));}
-function renderDrill(qs){document.getElementById('drillBox').innerHTML=qs.map((x,i)=>'<div class="card" id="dq'+i+'"><div class="muted">第'+(i+1)+'問</div><div>'+x.q+'</div><div class="passage">'+x.s+'</div>'+x.o.map((o,j)=>'<button class="opt" onclick="ansD('+i+','+j+','+x.a+')">'+(j+1)+'. '+o+'</button>').join('')+'<div class="exp hide" id="de'+i+'"><b>解説</b><br>'+x.e+'<div class="kana">【読み】'+x.k+'</div><div class="ja">【訳】'+x.j+'</div></div></div>').join('')+'<div class="card"><b id="dscore">0 / '+qs.length+' 正解</b></div>';window._dq=qs;window._dc=0;window._dd=new Set();}
+function renderDrill(qs){document.getElementById('drillBox').innerHTML=qs.map((x,i)=>'<div class="card" id="dq'+i+'"><div class="muted">第'+(i+1)+'問</div><div>'+x.q+'</div><div class="passage">'+x.s+(KANA_ON&&x.sk?'<div class="kana">'+x.sk+'</div>':'')+'</div>'+x.o.map((o,j)=>'<button class="opt" onclick="ansD('+i+','+j+','+x.a+')">'+(j+1)+'. '+o+'</button>').join('')+'<div class="exp hide" id="de'+i+'"><b>解説</b><br>'+x.e+'<div class="kana">【読み】'+x.k+'</div><div class="ja">【訳】'+x.j+'</div></div></div>').join('')+'<div class="card"><b id="dscore">0 / '+qs.length+' 正解</b></div>';window._dq=qs;window._dc=0;window._dd=new Set();}
 function ansD(i,j,a){if(window._dd.has(i))return;window._dd.add(i);document.querySelectorAll('#dq'+i+' .opt').forEach((b,n)=>b.classList.add(n===a?'correct':(n===j?'wrong':'')));document.getElementById('de'+i).classList.remove('hide');const st=LS.st;st.t++;if(j===a){st.c++;window._dc++;}LS.st=st;document.getElementById('dscore').textContent=window._dc+' / '+window._dq.length+' 正解';}
 let mockAns=[],timer=null,left=1500;
-function startMock(){mockAns=new Array(MOCK.length).fill(null);left=1500;document.getElementById('mockBox').innerHTML=MOCK.map((x,i)=>'<div class="card" id="mq'+i+'"><div class="muted">問 '+(i+1)+' / '+MOCK.length+'</div><div class="passage">'+x.p+'</div><div>'+x.q+'</div>'+x.o.map((o,j)=>'<button class="opt" onclick="pick('+i+','+j+')">'+(j+1)+'. '+o+'</button>').join('')+'<div class="exp hide" id="me'+i+'"></div></div>').join('');clearInterval(timer);timer=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timer);submitMock();}},1000);tick();}
+function startMock(){mockAns=new Array(MOCK.length).fill(null);left=1500;document.getElementById('mockBox').innerHTML=MOCK.map((x,i)=>'<div class="card" id="mq'+i+'"><div class="muted">問 '+(i+1)+' / '+MOCK.length+'</div><div class="passage">'+x.p+(KANA_ON?'<div class="kana">'+kana(x.p.replace(/[,.?!]/g,''))+'</div>':'')+'</div><div>'+x.q+'</div>'+x.o.map((o,j)=>'<button class="opt" onclick="pick('+i+','+j+')">'+(j+1)+'. '+o+'</button>').join('')+'<div class="exp hide" id="me'+i+'"></div></div>').join('');clearInterval(timer);timer=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timer);submitMock();}},1000);tick();}
 function tick(){document.getElementById('clock').textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0');}
 function pick(i,j){mockAns[i]=j;document.querySelectorAll('#mq'+i+' .opt').forEach((b,n)=>b.style.borderColor=n===j?'var(--acc)':'var(--line)');}
 function submitMock(){if(!mockAns.length){alert('先に「試験開始」を押してください。');return;}clearInterval(timer);let c=0;
  MOCK.forEach((x,i)=>{const ok=mockAns[i]===x.a;if(ok)c++;document.querySelectorAll('#mq'+i+' .opt').forEach((b,n)=>b.classList.add(n===x.a?'correct':(n===mockAns[i]?'wrong':'')));const e=document.getElementById('me'+i);e.classList.remove('hide');e.innerHTML='<b>'+(ok?'○ 正解':'× 不正解')+'</b>　正答：'+(x.a+1)+'<br>'+x.e+'<div class="kana">【読み】'+kana(x.p.replace(/[,.?!]/g,''))+'</div><div class="ja">【訳】'+x.j+'</div>';});
  const sc=Math.round(c/MOCK.length*100),cv=Math.round(c/MOCK.length*200);const lvl=cv>=140?'2級レベル（目標達成）':cv>=80?'1級レベル':'級なし（基礎固めが必要）';
  const st=LS.st;if(st.mock==null||sc>st.mock)st.mock=sc;LS.st=st;
- document.getElementById('mockBox').insertAdjacentHTML('afterbegin','<div class="card"><h2>採点結果</h2><div class="stat"><div><b>'+c+'/'+MOCK.length+'</b><span>正答数</span></div><div><b>'+sc+'</b><span>得点率(%)</span></div><div><b>'+cv+'</b><span>200点換算</span></div></div><p><b>判定：'+lvl+'</b></p><p class="muted">※読解のみの簡易換算です。</p></div>');scrollTo(0,0);}
+ document.getElementById('mockBox').insertAdjacentHTML('afterbegin','<div class="card"><h2>採点結果</h2><div class="stat"><div><b>'+c+'/'+MOCK.length+'</b><span>正答数</span></div><div><b>'+sc+'</b><span>得点率(%)</span></div><div><b>'+cv+'</b><span>200点換算</span></div></div><p><b>判定：'+lvl+'</b></p><p class="muted">※読解のみの簡易換算です。'+(KANA_ON?'カナ表示ONでの結果です。':'')+'</p></div>');scrollTo(0,0);}
 
-/* ========== ハングル学習モジュール ========== */
+/* ========== ハングル学習 ========== */
 const VB=[["ㅏ","ア","口を大きく開いてア"],["ㅑ","ヤ","ㅏに線を足すとy音"],["ㅓ","オ","口を縦に開かないオ"],["ㅕ","ヨ","ㅓのy音"],["ㅗ","オ","唇を丸めて前に出すオ"],["ㅛ","ヨ","ㅗのy音"],["ㅜ","ウ","唇を丸めるウ"],["ㅠ","ユ","ㅜのy音"],["ㅡ","ウ","唇を横に引くウ"],["ㅣ","イ","イ"]];
 const VC=[["ㅐ","エ","ㅏ+ㅣ"],["ㅒ","イェ","ㅐのy音"],["ㅔ","エ","ㅓ+ㅣ。ㅐとほぼ同音"],["ㅖ","イェ","子音が付くとエ(계→ケ)"],["ㅘ","ワ","ㅗ+ㅏ"],["ㅙ","ウェ","ㅗ+ㅐ"],["ㅚ","ウェ","実際は[ウェ]"],["ㅝ","ウォ","ㅜ+ㅓ"],["ㅞ","ウェ","ㅜ+ㅔ"],["ㅟ","ウィ","ㅜ+ㅣ"],["ㅢ","ウィ/イ/エ","語頭ウィ・子音付きイ・助詞はエ"]];
 const CB=[["ㄱ","k／g","語頭カ行、語中ガ行"],["ㄴ","n","ナ行"],["ㄷ","t／d","語頭タ行、語中ダ行"],["ㄹ","r／l","語中ラ行、パッチムはル"],["ㅁ","m","マ行"],["ㅂ","p／b","語頭パ行、語中バ行"],["ㅅ","s","サ行。ㅣ系の前はシャ行"],["ㅇ","無音／ng","初声は無音、パッチムはン"],["ㅈ","ch／j","語頭チャ行、語中ジャ行"],["ㅊ","ch","ㅈの激音"],["ㅋ","k","ㄱの激音"],["ㅌ","t","ㄷの激音"],["ㅍ","p","ㅂの激音"],["ㅎ","h","ハ行。パッチムでは脱落・激音化"]];
@@ -1908,27 +1929,28 @@ const CHO14="ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ".split("");
 const JUNG10="ㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣ".split("");
 const syl=(c,v)=>String.fromCharCode(0xAC00+(CHO.indexOf(c)*21+JUNG.indexOf(v))*28);
 function buildHangul(){
- const cell=a=>'<div class="cell" data-r="'+a[1]+'"><div class="j">'+a[0]+'</div><div class="r"></div><div class="muted" style="font-size:10px">tap</div></div>';
+ const cell=a=>'<div class="cell" data-r="'+a[1]+'"><div class="j">'+a[0]+'</div><div class="r">'+(KANA_ON?a[1]:'')+'</div><div class="muted" style="font-size:10px">tap</div></div>';
  let ban='<table class="ban"><tr><th></th>'+JUNG10.map(v=>'<th>'+v+'</th>').join('')+'</tr>';
- CHO14.forEach(c=>{ban+='<tr><th>'+c+'</th>'+JUNG10.map(v=>{const s=syl(c,v);return '<td data-k="'+kana(s)+'"><b>'+s+'</b><span></span></td>';}).join('')+'</tr>';});
+ CHO14.forEach(c=>{ban+='<tr><th>'+c+'</th>'+JUNG10.map(v=>{const s=syl(c,v),kk=kana(s);return '<td data-k="'+kk+'"><b>'+s+'</b><span>'+(KANA_ON?kk:'')+'</span></td>';}).join('')+'</tr>';});
  ban+='</table>';
  document.getElementById('hangulBody').innerHTML=
  '<div class="card"><h2>ハングルの仕組み</h2><p class="muted">ハングルは「子音＋母音（＋パッチム）」を四角に組み合わせた音素文字です。組み方は4型だけです。</p>'
  +'<table><tr><th>型</th><th>構成</th><th>例</th></tr><tr><td>左右型</td><td>子音＋縦長母音(ㅏㅓㅣ等)</td><td>가</td></tr><tr><td>上下型</td><td>子音＋横長母音(ㅗㅜㅡ等)</td><td>고</td></tr><tr><td>左右＋下</td><td>＋パッチム</td><td>간</td></tr><tr><td>上下＋下</td><td>＋パッチム</td><td>곤</td></tr></table>'
  +'<p class="muted">母音だけの音は、子音の位置に無音の「ㅇ」を置きます（아＝ア、오＝オ）。</p></div>'
- +'<div class="card"><h2>基本母音 10（タップで読み）</h2><div class="grid">'+VB.map(cell).join('')+'</div><p class="muted" style="margin-top:8px">'+VB.map(v=>v[0]+'…'+v[2]).join('／')+'</p></div>'
+ +'<div class="card"><h2>基本母音 10</h2><div class="grid">'+VB.map(cell).join('')+'</div><p class="muted" style="margin-top:8px">'+VB.map(v=>v[0]+'…'+v[2]).join('／')+'</p></div>'
  +'<div class="card"><h2>複合母音 11</h2><div class="grid">'+VC.map(cell).join('')+'</div><p class="muted" style="margin-top:8px">'+VC.map(v=>v[0]+'…'+v[2]).join('／')+'</p></div>'
  +'<div class="card"><h2>基本子音 14</h2><div class="grid">'+CB.map(cell).join('')+'</div><p class="muted" style="margin-top:8px">'+CB.map(v=>v[0]+'…'+v[2]).join('／')+'</p></div>'
  +'<div class="card"><h2>濃音 5（平音・激音との三系列）</h2><div class="grid">'+CT.map(cell).join('')+'</div>'
  +'<table style="margin-top:8px"><tr><th>平音</th><th>激音</th><th>濃音</th></tr><tr><td>ㄱ 가</td><td>ㅋ 카</td><td>ㄲ 까</td></tr><tr><td>ㄷ 다</td><td>ㅌ 타</td><td>ㄸ 따</td></tr><tr><td>ㅂ 바</td><td>ㅍ 파</td><td>ㅃ 빠</td></tr><tr><td>ㅈ 자</td><td>ㅊ 차</td><td>ㅉ 짜</td></tr><tr><td>ㅅ 사</td><td>―</td><td>ㅆ 싸</td></tr></table>'
- +'<p class="muted">平音＝軽く息を出す／激音＝強く息を出す／濃音＝息を止めて詰める。意味が変わるため聞き分けが必須です。</p></div>'
- +'<div class="card"><h2>반절표（가나다表・タップで読み）</h2><div style="overflow:auto">'+ban+'</div><div class="row" style="margin-top:8px"><button id="h-allon">すべて表示</button><button id="h-alloff">すべて隠す</button></div></div>'
- +'<div class="card"><h2>パッチム（받침）7代表音</h2><table><tr><th>綴り</th><th>代表音</th><th>カナ</th><th>例</th></tr>'+BAT.map(b=>'<tr><td>'+b[0]+'</td><td>'+b[1]+'</td><td>'+b[2]+'</td><td>'+b[3]+'</td></tr>').join('')+'</table><p class="muted">27種のパッチムはすべてこの7音のどれかで発音されます。二重パッチムは片方だけが読まれます。</p></div>'
+ +'<p class="muted">平音＝軽く息を出す／激音＝強く息を出す／濃音＝息を止めて詰める。</p></div>'
+ +'<div class="card"><h2>반절표（가나다表）</h2><div style="overflow:auto">'+ban+'</div><div class="row" style="margin-top:8px"><button id="h-allon">すべて表示</button><button id="h-alloff">すべて隠す</button></div><p class="muted">マスをタップすると個別に切り替わります。</p></div>'
+ +'<div class="card"><h2>パッチム（받침）7代表音</h2><table><tr><th>綴り</th><th>代表音</th><th>カナ</th><th>例</th></tr>'+BAT.map(b=>'<tr><td>'+b[0]+'</td><td>'+b[1]+'</td><td>'+b[2]+'</td><td>'+b[3]+'</td></tr>').join('')+'</table><p class="muted">27種のパッチムはすべてこの7音のどれかで発音されます。</p></div>'
  +'<div class="card"><h2>発音変化の7規則</h2><table><tr><th>規則</th><th>内容</th><th>例（実際の読み）</th></tr>'+RULES.map(r=>'<tr><td>'+r[0]+'</td><td class="muted">'+r[1]+'</td><td>'+r[2]+' → <span class="kana">'+kana(r[2])+'</span></td></tr>').join('')+'</table></div>'
- +'<div class="card"><h2>ハングル練習</h2><div class="row"><button data-q="jamo">字母→読み</button><button data-q="syll">文字→カナ</button><button data-q="rev">カナ→文字</button><button data-q="bat">パッチム発音</button></div><p class="muted">10問ずつ出題。正答率は学習ステータスに合算されます。</p></div>';
+ +'<div class="card"><h2>ハングル練習</h2><div class="row"><button data-q="jamo">字母→読み</button><button data-q="syll">文字→カナ</button><button data-q="rev">カナ→文字</button><button data-q="bat">パッチム発音</button></div><p class="muted">10問ずつ出題。読みを当てる設問のため、カナは解答後に表示されます。</p></div>';
  const sec=document.getElementById('v-hangul');
- sec.addEventListener('click',e=>{const c=e.target.closest('.cell');if(c){const r=c.querySelector('.r');r.textContent=r.textContent?'':c.dataset.r;return;}
-  const td=e.target.closest('.ban td');if(td){const s=td.querySelector('span');s.textContent=s.textContent?'':td.dataset.k;}});
+ if(!sec.dataset.bound){sec.dataset.bound='1';
+  sec.addEventListener('click',e=>{const c=e.target.closest('.cell');if(c){const r=c.querySelector('.r');r.textContent=r.textContent?'':c.dataset.r;return;}
+   const td=e.target.closest('.ban td');if(td){const s=td.querySelector('span');s.textContent=s.textContent?'':td.dataset.k;}});}
  document.getElementById('h-allon').onclick=()=>sec.querySelectorAll('.ban td').forEach(t=>t.querySelector('span').textContent=t.dataset.k);
  document.getElementById('h-alloff').onclick=()=>sec.querySelectorAll('.ban td').forEach(t=>t.querySelector('span').textContent='');
  sec.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>renderH(makeH(b.dataset.q)));
@@ -1955,5 +1977,5 @@ function ansH(i,j){if(hDone.has(i))return;hDone.add(i);const x=hCur[i];
  document.getElementById('hscore').textContent=hCor+' / '+hCur.length+' 正解';}
 
 document.getElementById('hideKnown').addEventListener('change',buildPool);
-buildChips();buildPool();renderList();renderGram();buildHangul();renderHome();
+buildChips();buildPool();renderList();applyKana();renderHome();
 </script></body></html>
